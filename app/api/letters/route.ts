@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAllLetters, createLetter } from '@/lib/db';
 import { decryptSession } from '@/lib/session';
+import { sendLoveLetterNotification } from '@/lib/email';
 
 // GET: List all letters (public)
 export async function GET() {
@@ -53,6 +54,10 @@ export async function POST(request: NextRequest) {
     }
 
     const letter = createLetter({ date, title, content });
+
+    // Send email notification asynchronously (don't wait for it)
+    sendLoveLetterNotification(title || 'Untitled Letter');
+
     return NextResponse.json(letter, { status: 201 });
   } catch (error) {
     return NextResponse.json(
