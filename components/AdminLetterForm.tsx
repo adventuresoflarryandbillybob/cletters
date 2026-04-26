@@ -6,8 +6,16 @@ interface AdminLetterFormProps {
   onSuccess: () => void;
 }
 
+function getTodayDate(): string {
+  const today = new Date();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const year = today.getFullYear();
+  return `${month}/${day}/${year}`;
+}
+
 export default function AdminLetterForm({ onSuccess }: AdminLetterFormProps) {
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState(getTodayDate());
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [error, setError] = useState('');
@@ -61,12 +69,12 @@ export default function AdminLetterForm({ onSuccess }: AdminLetterFormProps) {
           </label>
           <input
             type="text"
-            placeholder="mm/dd/yyyy"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-500 bg-gray-50"
+            title="Today's date - change if you want a different date"
           />
+          <p className="text-xs text-gray-500 mt-1">Today's date (edit if needed)</p>
         </div>
 
         <div>
