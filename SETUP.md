@@ -47,7 +47,9 @@ The app automatically creates `data/letters.db` on first run. No setup required!
 
 The database file persists between server restarts, so your letters are safe.
 
-## Deployment to Railway
+## Deployment to Render.com (Free!)
+
+Render has a free tier that works perfectly for this app - no credit card required!
 
 ### 1. Push code to GitHub
 ```bash
@@ -56,32 +58,51 @@ git commit -m "Initial commit"
 git push origin main
 ```
 
-### 2. Create Railway project
-- Go to [railway.app](https://railway.app)
-- Click "New Project" → "GitHub Repo"
-- Select your repository
-- Railway auto-detects it's a Next.js app
+### 2. Create Render account and connect GitHub
+- Go to [render.com](https://render.com)
+- Sign up for free (no credit card needed)
+- Authorize your GitHub account
 
-### 3. Configure environment variables
-In Railway dashboard, add these variables:
-- `ADMIN_PASSWORD` = your secure password
-- `SESSION_SECRET` = a long random string
+### 3. Create a new Web Service
+- Click "New +" → "Web Service"
+- Select your `c_letters` repository
+- Click "Connect"
 
-Generate a secure SESSION_SECRET:
+### 4. Configure settings
+- **Name:** `love-letters` (or your preferred name)
+- **Environment:** Node
+- **Build Command:** `npm install && npm run build`
+- **Start Command:** `npm start`
+- **Plan:** Free
+
+### 5. Add environment variables
+Click "Advanced" and add these environment variables:
+- `ADMIN_PASSWORD` = your secure password (e.g., `myadminpass123`)
+- `SESSION_SECRET` = generate a random string:
+  ```bash
+  node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+  ```
+
+### 6. Deploy
+Click "Create Web Service" and wait 2-3 minutes for the first deployment!
+
+Your app will be live at: `https://love-letters.onrender.com` (or whatever name you chose)
+
+### Important: Free Tier Details
+- ✅ Completely free
+- ✅ HTTPS included
+- ✅ SQLite database persists across restarts
+- ⚠️ Service spins down after 15 minutes of inactivity (wakes up on first request in ~30 seconds)
+
+### Auto-Deploy on Git Push
+Once connected, Render automatically redeploys whenever you push to GitHub! Just:
 ```bash
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+git add .
+git commit -m "Your changes"
+git push origin main
 ```
 
-### 4. Add persistent volume for database
-- In Railway, go to your service
-- Click "Volumes" → "New"
-- Mount at: `/data`
-- Size: 1GB (more than enough)
-
-### 5. Deploy
-Click "Deploy" - that's it!
-
-Your app is now live at: `your-project.railway.app`
+And your updates will be live in 2-3 minutes.
 
 ## Testing
 
@@ -117,8 +138,8 @@ lsof -ti:3000 | xargs kill -9
 npm run dev -- -p 3001
 ```
 
-### Changes not showing on Railway
-Railway automatically redeploys on git push. Wait 2-3 minutes for deployment to complete.
+### Changes not showing on Render
+Render automatically redeploys on git push. Wait 2-3 minutes for deployment to complete. You can check the deployment status in your Render dashboard.
 
 ## File Structure Reference
 
@@ -130,7 +151,7 @@ c_letters/
 │   ├── api/
 │   │   ├── letters/
 │   │   │   ├── route.ts         # POST create, GET list
-│   │   │   └── [id]/route.ts    # GET one, PUT update, DELETE
+│   │   │   └── [id]/route.ts    # GET one, DELETE
 │   │   └── auth/
 │   │       ├── login/           # POST login
 │   │       ├── logout/          # POST logout
@@ -154,14 +175,14 @@ c_letters/
 
 - The app is designed for a single author (you) and multiple readers
 - All read endpoints (`GET /api/letters`) are public
-- All write endpoints (`POST/PUT/DELETE /api/letters`) require valid session
+- All write endpoints (`POST/DELETE /api/letters`) require valid admin session
 - Session cookies are encrypted with `iron-session`
 - Date format is validated to MM/DD/YYYY
-- Deploy over HTTPS in production (Railway does this automatically)
+- Render automatically serves over HTTPS (no configuration needed)
 
 ## Next Steps
 
-1. Change `ADMIN_PASSWORD` to something only you know
-2. Deploy to Railway using the guide above
-3. Share the reader link with your loved one
+1. Change `ADMIN_PASSWORD` in `.env.local` to something only you know
+2. Deploy to Render.com using the guide above
+3. Share the reader link (e.g., `https://love-letters.onrender.com`) with your loved one
 4. Start writing love letters! 💕

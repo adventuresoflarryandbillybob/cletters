@@ -14,7 +14,6 @@ A beautiful full-stack web app for creating and sharing love letters. Readers ca
 - 🔐 Password-protected admin panel
 - ✍️ Create new letters with custom dates (MM/DD/YYYY format)
 - 📝 Add optional titles to letters
-- ✏️ Edit existing letters
 - 🗑️ Delete letters
 
 ## Getting Started
@@ -51,18 +50,57 @@ npm run dev
 
 ## Deployment
 
-### Railway (Recommended)
+### Render.com (Free & Recommended)
 
-1. Connect your Git repo to Railway
-2. Set environment variables:
-   - `ADMIN_PASSWORD`
-   - `SESSION_SECRET`
-3. Mount a persistent volume at `/data` for the SQLite database
-4. Deploy!
+Render has a generous free tier perfect for this app!
 
-### Vercel
+**Step 1: Push to GitHub**
+```bash
+git add .
+git commit -m "Initial commit"
+git push origin main
+```
 
-⚠️ **Note:** Vercel's serverless environment doesn't support SQLite file writes. Use Railway instead for persistent storage.
+**Step 2: Create Render Account**
+1. Go to [render.com](https://render.com)
+2. Sign up (free, no credit card needed)
+3. Click "New +" → "Web Service"
+4. Connect your GitHub account and select your repository
+
+**Step 3: Configure Deployment**
+- **Name:** `love-letters` (or any name)
+- **Environment:** `Node`
+- **Build Command:** `npm install && npm run build`
+- **Start Command:** `npm start`
+
+**Step 4: Set Environment Variables**
+1. In Render dashboard, go to "Environment"
+2. Add two variables:
+   - `ADMIN_PASSWORD` = your secure password
+   - `SESSION_SECRET` = run this to generate a random string:
+     ```bash
+     node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+     ```
+
+**Step 5: Deploy**
+Click "Create Web Service" and wait 2-3 minutes for deployment to complete!
+
+Your app will be live at: `https://your-app-name.onrender.com`
+
+**Free Tier Details:**
+- ✅ Always free
+- ✅ Persistent storage for SQLite database
+- ✅ Auto-deploys on git push
+- ✅ HTTPS included
+- Note: Service spins down after 15 mins of inactivity, wakes up on first request (takes ~30 seconds)
+
+### Other Options
+
+**Vercel**
+⚠️ Not recommended - serverless doesn't support SQLite file writes
+
+**Local + ngrok**
+Keep running on your computer and share via `ngrok http 3000` for a public URL
 
 ## Project Structure
 
@@ -93,14 +131,6 @@ love-letters/
 3. (Optional) Add a title
 4. Write your letter content
 5. Click "Create"
-
-### Editing a Letter
-
-1. Go to `/admin`
-2. Find the letter in the "Existing Letters" list
-3. Click "Edit"
-4. Update any field
-5. Click "Update"
 
 ### Deleting a Letter
 
