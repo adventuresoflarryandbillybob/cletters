@@ -1,22 +1,30 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend: Resend | null = null;
+
+function getResend() {
+  if (!resend && process.env.RESEND_API_KEY) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resend;
+}
 
 export async function sendLoveLetterNotification(title: string) {
   const recipientEmail = process.env.NOTIFICATION_EMAIL;
+  const resendClient = getResend();
 
   if (!recipientEmail) {
     console.warn('NOTIFICATION_EMAIL not configured, skipping email notification');
     return;
   }
 
-  if (!process.env.RESEND_API_KEY) {
+  if (!resendClient) {
     console.warn('RESEND_API_KEY not configured, skipping email notification');
     return;
   }
 
   try {
-    await resend.emails.send({
+    await resendClient.emails.send({
       from: 'Love Letters <onrender@resend.dev>',
       to: recipientEmail,
       subject: '💌 You have received a new love letter!',
@@ -27,7 +35,7 @@ export async function sendLoveLetterNotification(title: string) {
             <strong>${title || 'Untitled'}</strong>
           </p>
           <p style="text-align: center; margin: 30px 0;">
-            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://love-letters.onrender.com'}"
+            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://cletters.onrender.com'}"
                style="background-color: #d9534f; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-size: 16px; font-weight: bold;">
               Read the Letter
             </a>
